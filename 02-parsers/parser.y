@@ -114,11 +114,25 @@ if_else_closure:
             $8;
         }
     }
+    | "if" assign ";" exp "{" unit "}" "else" "{" unit "}" {
+        $2;
+        if ($4) {
+            $6;
+        } else {
+            $10;
+        }
+    }
 
 if_closure:
     "if" exp "{" unit "}" {
         if ($2) {
             $4;
+        }
+    }
+    | "if" assign ";" exp "{" unit "}" {
+        $2;
+        if ($4) {
+            $6;
         }
     }
 
