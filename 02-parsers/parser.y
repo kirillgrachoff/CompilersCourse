@@ -38,19 +38,44 @@
 // token name in variable
 %token
     END 0 "end of file"
-    ASSIGN ":="
+    PRINTLN "println"
+    TRUE "true"
+    FALSE "false"
+    IF "if"
+    ELSE "else"
+    FOR "for"
+    ASSIGN "="
     MINUS "-"
     PLUS "+"
     STAR "*"
     SLASH "/"
     LPAREN "("
     RPAREN ")"
+    LCURLY "{"
+    RCURLY "}"
     SEMICOLON ";"
+    BINAND "&"
+    BINOR "|"
+    BOOLNOT "!"
+    BITNOT "~"
+    EQ "=="
+    NEQ "!="
+    LT "<"
+    LE "<="
+    GT ">"
+    GE ">="
+    XOR "^"
 ;
 
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
+%nterm <int> assign
 %nterm <int> exp
+%nterm <int> printing
+%nterm <int> for_loop
+%nterm <int> assignment
+%nterm <int> conditional
+%nterm <int> unit
 
 // Prints output in parsing option for debugging location terminal
 %printer { yyo << $$; } <*>;
@@ -60,23 +85,52 @@
 %left "*" "/";
 
 %start unit;
-unit: assignments exp ";" { driver.result = $2; };
+unit: %empty { driver.result = 0; }
+    | assignment unit {};
+    | printing unit {};
+    | for_loop unit {};
+    | conditional unit {};
 
-assignments:
-    %empty {}
-    | assignments assignment {};
+printing:
+    "println" "(" exp ")" ";" {
+        std::cout << $3 << std::endl;
+    }
 
-assignment:
-    "identifier" ":=" exp ";" {
+for_loop:
+    "for" assign ";" exp ";" assign "{" unit "}" {
+        for ($2; $4; $6) {
+            $8;
+        }
+    }
+
+conditional: if_closure {};
+    | if_else_closure {}
+
+if_else_closure:
+    "if" exp "{" unit "}" "else" "{" unit "}" {
+        if ($2) {
+            $4;
+        } else {
+            $8;
+        }
+    }
+
+if_closure:
+    "if" exp "{" unit "}" {
+        if ($2) {
+            $4;
+        }
+    }
+
+assignment: assign ";"
+
+assign:
+    "identifier" "=" exp {
         driver.variables[$1] = $3;
         if (driver.location_debug) {
             std::cerr << driver.location << std::endl;
         }
     }
-    | error ";" {
-    	// Hint for compilation error, resuming producing messages
-    	std::cerr << "You should provide assignment in the form: variable := expression ; " << std::endl;
-    };
 
 
 
@@ -88,11 +142,26 @@ exp:
     | exp "*" exp {$$ = $1 * $3; }
     | exp "/" exp {$$ = $1 / $3; }
     | "(" exp ")" {$$ = $2; };
+    | exp "<" exp {$$ = $1 < $3; }
+    | exp "<=" exp {$$ = $1 <= $3; }
+    | exp ">" exp {$$ = $1 > $3; }
+    | exp ">=" exp {$$ = $1 >= $3; }
+    | exp "==" exp {$$ = $1 == $3; }
+    | exp "!=" exp {$$ = $1 != $3; }
+    | exp "&" exp {$$ = $1 & $3; }
+    | exp "|" exp {$$ = $1 | $3; }
+    | "!" exp {$$ = ! $2; }
+    | "~" exp {$$ = ~ $2; }
+    | "-" exp {$$ = - $2; }
+    | "+" exp {$$ = + $2; }
+    | exp "^" exp {$$ = $1 ^ $3; }
+    | "false" {$$ = false; }
+    | "true" {$$ = true; }
 
 %%
 
 void
 yy::parser::error(const location_type& l, const std::string& m)
 {
-  std::cerr << l << ": " << m << '\n';
+  std::cerr << "ERROR: " << l << ": " << m << '\n';
 }
