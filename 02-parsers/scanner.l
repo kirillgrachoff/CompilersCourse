@@ -37,7 +37,7 @@ else   else
 println println
 true   true
 false  false
-string \"[a-zA-Z_0-9]*\"
+string (["])[a-zA-Z_0-9]*(["])
 id     [a-zA-Z][a-zA-Z_0-9]*
 int    [0-9]+
 blank  [ \t\r]
@@ -108,7 +108,12 @@ blank  [ \t\r]
 "else"     return yy::parser::make_ELSE   (loc);
 "for"      return yy::parser::make_FOR    (loc);
 
-
+{string}   {
+                int len = strlen(yytext);
+                yytext[len - 1] = 0;
+                ++yytext;
+                return yy::parser::make_STRING(yytext, loc);
+           }
 {int}      return make_NUMBER(yytext, loc);
 {id}       {
                 if (driver.location_debug) {

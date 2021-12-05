@@ -90,6 +90,7 @@
 ;
 
 %token <std::string> IDENTIFIER "identifier"
+%token <std::string> STRING "string"
 %token <int> NUMBER "number"
 %nterm <std::shared_ptr<Runnable>> assign
 %nterm <std::shared_ptr<Expression>> exp
@@ -166,6 +167,7 @@ assign:
 
 exp:
     "number" {$$ = new_value($1); }
+    | "string" {$$ = new_value($1); }
     | "identifier" {$$ = std::make_shared<Variable>($1, driver); }
     | exp "+" exp {$$ = new_expression<ExpressionBoth>($1, $3, [](auto a, auto b) { return a + b; }); }
     | exp "-" exp {$$ = new_expression<ExpressionInt>($1, $3, [](auto a, auto b) { return a - b; }); }

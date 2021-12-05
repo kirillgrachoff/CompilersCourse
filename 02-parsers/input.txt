@@ -7,6 +7,8 @@ if x == 17 {
     println(0);
 }
 
-for x = 10; x < 40; x = x + 1 {
+for x = 10; x < 40 {
+    x = x + 1;
     println(x);
 }
+println("THE_END");
