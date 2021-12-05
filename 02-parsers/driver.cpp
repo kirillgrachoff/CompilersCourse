@@ -42,11 +42,12 @@ void Driver::scan_end()
 int Driver::run_program() {
     int res;
     try {
-        for (auto it : executable) {
+        for (const auto& it : executable) {
             res = it->run();
             if (res != 0) return res;
         }
     } catch (std::exception& ex) {
+        std::cerr << ex.what() << '\n';
         throw;
     }
     return res;

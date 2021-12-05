@@ -37,7 +37,7 @@ else   else
 println println
 true   true
 false  false
-string (["])[a-zA-Z_0-9]*(["])
+string ["][a-zA-Z_0-9 ]*["]
 id     [a-zA-Z][a-zA-Z_0-9]*
 int    [0-9]+
 blank  [ \t\r]

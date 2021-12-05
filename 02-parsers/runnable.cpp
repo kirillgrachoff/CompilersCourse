@@ -42,12 +42,12 @@ int RunnableAssign::run() {
 }
 int RunnablePrint::run() {
     auto arg = value->get();
-    std::cout << "Output: ";
     if (std::holds_alternative<int>(arg)) {
-        std::cout << std::get<int>(arg) << std::endl;
+        std::cout << std::get<int>(arg);
     } else {
-        std::cout << std::get<std::string>(arg) << std::endl;
+        std::cout << std::get<std::string>(arg);
     }
+    std::cout << std::endl;
     return 0;
 }
 int RunnableEmpty::run() {

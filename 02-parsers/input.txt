@@ -6,9 +6,31 @@ if x == 17 {
 } else {
     println(0);
 }
-
+println("test 2");
 for x = 10; x < 40 {
     x = x + 1;
     println(x);
 }
-println("THE_END");
+for x = 10; x < 40; x = x + 1 {
+    println(x);
+}
+x = "THE_END";
+x = x + " " + x;
+println(x);
+
+println("next test");
+println(x == x);
+println(x != x + "a");
+
+for x != "the end" {
+    println("changing x");
+    x = "the end";
+}
+
+if x = 10; x == 10 {
+    println("correct");
+} else {
+    println("incorrect");
+}
+
+x = 1 + "the";
