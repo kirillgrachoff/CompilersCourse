@@ -1,5 +1,5 @@
 # Lightweight С++-Golang
-- assignment `<name> = <name> = <expr>;`
+- assignment `<name> = <expr>;`
 - plus `<exp> + <exp>`
 - minus `<exp> - <exp>`
 - output `println(<exp>)`
@@ -37,7 +37,6 @@ for <condition> {
 - strings
 ```go
 s = "abacaba"
-s += "abacaba"
 ```
 - boolean operators
 ```go
