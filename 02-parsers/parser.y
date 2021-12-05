@@ -110,7 +110,7 @@
 %left "*" "/";
 
 %start Unit;
-Unit: unit { driver.add_executable($1); };
+Unit: unit { driver.set_executable($1); };
 
 unit: %empty { driver.result = 0; $$ = std::make_shared<RunnableEmpty>(); };
     | assignment unit { $$ = std::make_shared<RunnableSeq>($1, $2); };

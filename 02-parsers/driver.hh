@@ -32,9 +32,9 @@ public:
     bool location_debug;
 
     int run_program();
-    void add_executable(std::shared_ptr<Runnable>);
+    void set_executable(std::shared_ptr<Runnable>);
 
 private:
     std::ifstream stream;
-    std::vector<std::shared_ptr<Runnable>> executable;
+    std::shared_ptr<Runnable> program;
 };

@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "driver.hh"
 #include "parser.hh"
 
@@ -42,10 +44,8 @@ void Driver::scan_end()
 int Driver::run_program() {
     int res;
     try {
-        for (const auto& it : executable) {
-            res = it->run();
-            if (res != 0) return res;
-        }
+        res = program->run();
+        if (res != 0) return res;
     } catch (std::exception& ex) {
         std::cerr << ex.what() << '\n';
         throw;
@@ -53,7 +53,7 @@ int Driver::run_program() {
     return res;
 }
 
-void Driver::add_executable(std::shared_ptr<Runnable> exe) {
-    executable.push_back(exe);
+void Driver::set_executable(std::shared_ptr<Runnable> exe) {
+    program = std::move(exe);
 }
 
