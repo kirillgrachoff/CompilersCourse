@@ -3,14 +3,15 @@
 #include <map>
 #include <string>
 #include <fstream>
+#include <variant>
 #include "scanner.h"
 #include "parser.hh"
 
 
 class Driver {
- public:
+public:
     Driver();
-    std::map<std::string, int> variables;
+    std::map<std::string, std::variant<int, std::string>> variables;
     int result;
     int parse(const std::string& f);
     std::string file;
@@ -27,7 +28,7 @@ class Driver {
     Scanner scanner;
     yy::parser parser;
     bool location_debug;
- private:
-    std::ifstream stream;
 
+private:
+    std::ifstream stream;
 };

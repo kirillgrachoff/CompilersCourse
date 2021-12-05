@@ -24,6 +24,9 @@ if <condition> {
 for <assignment>; <condition>; <increment> {
 
 }
+for <assignment>; <condition> {
+
+}
 ```
 - while
 ```go

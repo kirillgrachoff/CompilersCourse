@@ -3,6 +3,7 @@ set(
     HEADERS
     ${ParserExample_SOURCE_DIR}/driver.hh
     ${ParserExample_SOURCE_DIR}/parser.hh
+    ${ParserExample_SOURCE_DIR}/expression.h
     )
 
 BISON_TARGET(
@@ -25,6 +26,7 @@ add_executable(
     02-ParserExample
     main.cpp
     driver.cpp
+    expression.cpp
     ${BISON_MyParser_OUTPUTS}
     ${FLEX_MyScanner_OUTPUTS}
 )
