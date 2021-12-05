@@ -2,6 +2,7 @@
 
 #include <variant>
 #include <memory>
+#include <iostream>
 #include "driver.hh"
 
 template <typename Function>
@@ -23,7 +24,9 @@ private:
     const T value;
 
 public:
-    Value(const T& value) : value(value) {}
+    Value(const T& value) : value(value) {
+        static_assert(std::is_same_v<T, std::string> || std::is_same_v<T, int>);
+    }
 
     std::variant<int, std::string> get() override {
         return {value};

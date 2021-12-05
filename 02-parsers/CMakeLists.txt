@@ -27,6 +27,7 @@ add_executable(
     main.cpp
     driver.cpp
     expression.cpp
+    runnable.cpp
     ${BISON_MyParser_OUTPUTS}
     ${FLEX_MyScanner_OUTPUTS}
 )

@@ -23,6 +23,14 @@
     class UnaryExpressionInt;
     template <typename Function>
     class UnaryExpressionString;
+
+    class Runnable;
+    class RunnableEmpty;
+    class RunnableSeq;
+    class RunnableFor;
+    class RunnableIf;
+    class RunnablePrint;
+    class RunnableAssign;
 }
 
 
@@ -33,6 +41,7 @@
     #include "driver.hh"
     #include "location.hh"
     #include "expression.h"
+    #include "runnable.h"
 
     /* Redefine parser to use our function from scanner */
     static yy::parser::symbol_type yylex(Scanner &scanner) {
@@ -82,13 +91,15 @@
 
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
-%nterm <int> assign
+%nterm <std::shared_ptr<Runnable>> assign
 %nterm <std::shared_ptr<Expression>> exp
-%nterm <int> printing
-%nterm <int> for_loop
-%nterm <int> assignment
-%nterm <int> conditional
-%nterm <int> unit
+%nterm <std::shared_ptr<Runnable>> printing
+%nterm <std::shared_ptr<Runnable>> for_loop
+%nterm <std::shared_ptr<Runnable>> if_closure
+%nterm <std::shared_ptr<Runnable>> if_else_closure
+%nterm <std::shared_ptr<Runnable>> assignment
+%nterm <std::shared_ptr<Runnable>> conditional
+%nterm <std::shared_ptr<Runnable>> unit
 
 // Prints output in parsing option for debugging location terminal
 %printer { yyo << $$; } <*>;
@@ -97,74 +108,55 @@
 %left "+" "-";
 %left "*" "/";
 
-%start unit;
-unit: %empty { driver.result = 0; }
-    | assignment unit {};
-    | printing unit {};
-    | for_loop unit {};
-    | conditional unit {};
+%start Unit;
+Unit: unit { driver.add_executable($1); };
+
+unit: %empty { driver.result = 0; $$ = std::make_shared<RunnableEmpty>(); };
+    | assignment unit { $$ = std::make_shared<RunnableSeq>($1, $2); };
+    | printing unit { $$ = std::make_shared<RunnableSeq>($1, $2); };
+    | for_loop unit { $$ = std::make_shared<RunnableSeq>($1, $2); };
+    | conditional unit { $$ = std::make_shared<RunnableSeq>($1, $2); };
 
 printing:
     "println" "(" exp ")" ";" {
-        std::cout << $3 << std::endl;
+        $$ = std::make_shared<RunnablePrint>($3);
     }
 
 for_loop:
     "for" assign ";" exp ";" assign "{" unit "}" {
-        for ($2; std::get<int>($4->get()); $6) {
-            $8;
-        }
+        $$ = std::make_shared<RunnableFor>($2, $4, $6, $8);
     }
     | "for" assign ";" exp "{" unit "}" {
-        $2;
-        while (std::get<int>($4->get())) {
-            $6;
-        }
+        $$ = std::make_shared<RunnableFor>($2, $4, nullptr, $6);
     }
     | "for" exp "{" unit "}" {
-        while (std::get<int>($2->get())) {
-            $4;
-        }
+        $$ = std::make_shared<RunnableFor>(nullptr, $2, nullptr, $4);
     }
 
-conditional: if_closure {};
-    | if_else_closure {}
+conditional: if_closure { $$ = $1; };
+    | if_else_closure { $$ = $1; }
 
 if_else_closure:
     "if" exp "{" unit "}" "else" "{" unit "}" {
-        if (std::get<int>($2->get())) {
-            $4;
-        } else {
-            $8;
-        }
+        $$ = std::make_shared<RunnableIf>(nullptr, $2, $4, $8);
     }
     | "if" assign ";" exp "{" unit "}" "else" "{" unit "}" {
-        $2;
-        if (std::get<int>($4->get())) {
-            $6;
-        } else {
-            $10;
-        }
+        $$ = std::make_shared<RunnableIf>($2, $4, $6, $10);
     }
 
 if_closure:
     "if" exp "{" unit "}" {
-        if (std::get<int>($2->get())) {
-            $4;
-        }
+        $$ = std::make_shared<RunnableIf>(nullptr, $2, $4, nullptr);
     }
     | "if" assign ";" exp "{" unit "}" {
-        $2;
-        if (std::get<int>($4->get())) {
-            $6;
-        }
+        $$ = std::make_shared<RunnableIf>($2, $4, $6, nullptr);
     }
 
-assignment: assign ";"
+assignment: assign ";" { $$ = $1; }
 
 assign:
     "identifier" "=" exp {
-        driver.variables[$1] = $3->get();
+        $$ = std::make_shared<RunnableAssign>($1, $3, driver);
         if (driver.location_debug) {
             std::cerr << driver.location << std::endl;
         }

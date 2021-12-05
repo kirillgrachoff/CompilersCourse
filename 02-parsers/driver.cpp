@@ -39,3 +39,20 @@ void Driver::scan_end()
     stream.close();
 }
 
+int Driver::run_program() {
+    int res;
+    try {
+        for (auto it : executable) {
+            res = it->run();
+            if (res != 0) return res;
+        }
+    } catch (std::exception& ex) {
+        throw;
+    }
+    return res;
+}
+
+void Driver::add_executable(std::shared_ptr<Runnable> exe) {
+    executable.push_back(exe);
+}
+
