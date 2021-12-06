@@ -4,6 +4,7 @@ set(
     ${ParserExample_SOURCE_DIR}/driver.hh
     ${ParserExample_SOURCE_DIR}/parser.hh
     ${ParserExample_SOURCE_DIR}/expression.h
+    ${ParserExample_SOURCE_DIR}/runnable.h
     )
 
 BISON_TARGET(
