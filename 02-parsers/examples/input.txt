@@ -1,0 +1,36 @@
+x = 17;
+println(x);
+println(x + 5);
+if x == 17 {
+    println(1);
+} else {
+    println(0);
+}
+println("test 2");
+for x = 10; x < 40 {
+    x = x + 1;
+    println(x);
+}
+for x = 10; x < 40; x = x + 1 {
+    println(x);
+}
+x = "THE_END";
+x = x + " " + x;
+println(x);
+
+println("next test");
+println(x == x);
+println(x != x + "a");
+
+for x != "the end" {
+    println("changing x");
+    x = "the end";
+}
+
+if x = 10; x == 10 {
+    println("correct");
+} else {
+    println("incorrect");
+}
+
+x = 1 + "the";

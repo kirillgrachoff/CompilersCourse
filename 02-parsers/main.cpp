@@ -13,10 +13,14 @@ int main(int argc, char** argv) {
         } else if (argv[i] == std::string("-l")) {
             driver.location_debug = true;
         } else if (!driver.parse(argv[i])) {
-            std::cout << driver.result << std::endl;
+            result = driver.result;
         } else {
             result = 1;
         }
+    }
+    if (result == 0) {
+        result = driver.run_program();
+        std::cout << "Process finished with exit code " << result << std::endl;
     }
 
     return result;

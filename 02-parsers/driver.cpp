@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "driver.hh"
 #include "parser.hh"
 
@@ -8,8 +10,6 @@ Driver::Driver() :
     trace_scanning(false),
     location_debug(false),
     scanner(*this), parser(scanner, *this) {
-    variables["one"] = 1;
-    variables["two"] = 2;
 }
 
 
@@ -39,5 +39,21 @@ void Driver::scan_begin() {
 void Driver::scan_end()
 {
     stream.close();
+}
+
+int Driver::run_program() {
+    int res;
+    try {
+        res = program->run();
+        if (res != 0) return res;
+    } catch (std::exception& ex) {
+        std::cerr << ex.what() << '\n';
+        throw;
+    }
+    return res;
+}
+
+void Driver::set_executable(std::shared_ptr<Runnable> exe) {
+    program = std::move(exe);
 }
 

@@ -31,9 +31,17 @@
   }
 %}
 
-id    [a-zA-Z][a-zA-Z_0-9]*
-int   [0-9]+
-blank [ \t\r]
+for    for
+if     if
+else   else
+println println
+true   true
+false  false
+string ["][a-zA-Z_0-9 ]*["]
+id     [a-zA-Z][a-zA-Z_0-9]*
+int    [0-9]+
+blank  [ \t\r]
+
 
 %{
   // Code run each time a pattern is matched.
@@ -78,9 +86,34 @@ blank [ \t\r]
 "/"        return yy::parser::make_SLASH  (loc);
 "("        return yy::parser::make_LPAREN (loc);
 ")"        return yy::parser::make_RPAREN (loc);
-":="       return yy::parser::make_ASSIGN (loc);
+"{"        return yy::parser::make_LCURLY (loc);
+"}"        return yy::parser::make_RCURLY (loc);
+"="        return yy::parser::make_ASSIGN (loc);
 ";"        return yy::parser::make_SEMICOLON(loc);
+"&"        return yy::parser::make_BINAND (loc);
+"|"        return yy::parser::make_BINOR  (loc);
+"!"        return yy::parser::make_BOOLNOT(loc);
+"~"        return yy::parser::make_BITNOT (loc);
+"=="       return yy::parser::make_EQ     (loc);
+"!="       return yy::parser::make_NEQ    (loc);
+"<"        return yy::parser::make_LT     (loc);
+">"        return yy::parser::make_GT     (loc);
+"<="       return yy::parser::make_LE     (loc);
+">="       return yy::parser::make_GE     (loc);
+"^"        return yy::parser::make_XOR    (loc);
+"println"  return yy::parser::make_PRINTLN(loc);
+"true"     return yy::parser::make_TRUE   (loc);
+"false"    return yy::parser::make_FALSE  (loc);
+"if"       return yy::parser::make_IF     (loc);
+"else"     return yy::parser::make_ELSE   (loc);
+"for"      return yy::parser::make_FOR    (loc);
 
+{string}   {
+                int len = strlen(yytext);
+                yytext[len - 1] = 0;
+                ++yytext;
+                return yy::parser::make_STRING(yytext, loc);
+           }
 {int}      return make_NUMBER(yytext, loc);
 {id}       {
                 if (driver.location_debug) {
